@@ -8,11 +8,13 @@ services:
       - ..:/var/www/html
     ports:
       - "8080:80"
-    # Instala extensiones necesarias de PHP para conectar a la base de datos
     command: >
       bash -c "docker-php-ext-install mysqli pdo pdo_mysql 
       && a2enmod rewrite 
       && apache2-foreground"
+      bash -c "apt-get update && apt-get install -y git
+   
+    
 
   db:
     image: mariadb:10.11
