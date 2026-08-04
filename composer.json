@@ -1,0 +1,17 @@
+{
+    "name": "josue/gestion-heladeria",
+    "autoload": {
+        "psr-4": {
+            "Josue\\GestionHeladeria\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Jaesparz",
+            "email": "jaesparz@espol.edu.ec"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
