@@ -1,20 +1,11 @@
-version: '3.8'
-
 services:
   app:
     image: php:8.2-apache
     volumes:
-      # Mapea la carpeta del proyecto al servidor web de Apache
       - ..:/var/www/html
     ports:
       - "8080:80"
-    command: >
-      bash -c "docker-php-ext-install mysqli pdo pdo_mysql 
-      && a2enmod rewrite 
-      && apache2-foreground"
-      bash -c "apt-get update && apt-get install -y git
-   
-    
+    command: ["bash", "-c", "apt-get update && apt-get install -y git && docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && apache2-foreground"]
 
   db:
     image: mariadb:10.11
