@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    image: php:8.2-apache
+    volumes:
+      # Mapea la carpeta del proyecto al servidor web de Apache
+      - ..:/var/www/html
+    ports:
+      - "8080:80"
+    # Instala extensiones necesarias de PHP para conectar a la base de datos
+    command: >
+      bash -c "docker-php-ext-install mysqli pdo pdo_mysql 
+      && a2enmod rewrite 
+      && apache2-foreground"
+
+  db:
+    image: mariadb:10.11
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: heladeria_db
+    ports:
+      - "3306:3306"
