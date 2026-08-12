@@ -1,2 +1,5 @@
 /vendor/
+# Ignorar variables de entorno
 .env
+.devcontainer/.env
+backend/.env

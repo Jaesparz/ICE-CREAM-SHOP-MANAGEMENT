@@ -5,13 +5,14 @@ services:
       - ..:/var/www/html
     ports:
       - "8080:80"
-    command: ["bash", "-c", "apt-get update && apt-get install -y git && docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && apache2-foreground"]
+    command: ["bash", "-c", "apt-get update && apt-get install -y git unzip curl && curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer && docker-php-ext-install mysqli pdo pdo_mysql && a2enmod rewrite && apache2-foreground"]
 
   db:
     image: mariadb:10.11
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: heladeria_db
+      # Aquí inyectamos las variables de forma segura
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
