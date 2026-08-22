@@ -13,7 +13,7 @@ try {
     //filtramos para que en el backen se sepa de antemano si el stock es mayor a 0
     $query = "SELECT id_insumo, nombre, tipo, stock_actual, 
               IF(stock_actual > 0, true, false) as disponible 
-              FROM Insumos";
+              FROM insumos";
               
     $stmt = $pdo->prepare($query);
     $stmt->execute();

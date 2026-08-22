@@ -2,78 +2,113 @@
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
-// Manejo de preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+    http_response_code(204);
+    exit;
 }
 
 require_once 'conexion.php';
 
 try {
-    // Validamos que sea una petición POST
+
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        throw new Exception("Método no permitido. Use POST");
+        throw new Exception("Método no permitido. Use POST.");
     }
 
-    // Obtenemos los datos del cliente
     $input = json_decode(file_get_contents("php://input"), true);
 
-    // Validación de parámetros
-    if (empty($input['id_pedido']) || empty($input['nuevo_estado'])) {
-        throw new Exception("Parámetros incompletos: id_pedido y nuevo_estado son requeridos");
+    if (!is_array($input)) {
+        throw new Exception("El cuerpo de la solicitud debe ser un JSON válido.");
     }
 
-    $id_pedido = intval($input['id_pedido']);
-    $nuevo_estado = $input['nuevo_estado']; // "Completado"
+    if (
+        !isset($input['id_pedido']) ||
+        !isset($input['nuevo_estado'])
+    ) {
+        throw new Exception(
+            "Parámetros incompletos: id_pedido y nuevo_estado son requeridos."
+        );
+    }
 
-    // Estados permitidos
-    $estados_permitidos = ['Pendiente', 'En Preparación', 'Completado', 'Cancelado'];
-    if (!in_array($nuevo_estado, $estados_permitidos)) {
-        throw new Exception("Estado no válido. Estados permitidos: " . implode(", ", $estados_permitidos));
+    $id_pedido = filter_var(
+        $input['id_pedido'],
+        FILTER_VALIDATE_INT
+    );
+
+    $nuevo_estado = trim($input['nuevo_estado']);
+
+    if ($id_pedido === false || $id_pedido <= 0) {
+        throw new Exception("El id_pedido debe ser un número válido.");
+    }
+
+    // Estados permitidos por la base de datos
+    $estados_permitidos = [
+        'En cola',
+        'En preparación',
+        'Completado',
+        'Cancelado'
+    ];
+
+    if (!in_array($nuevo_estado, $estados_permitidos, true)) {
+        throw new Exception(
+            "Estado no válido. Estados permitidos: " .
+            implode(", ", $estados_permitidos)
+        );
     }
 
     $conexion = new Conexion();
     $pdo = $conexion->conectar();
 
-    // Primero verificamos que el pedido existe
-    $verificar = "SELECT id_pedido, estado FROM Pedidos WHERE id_pedido = ?";
+    // Verificar que el pedido existe
+    $verificar = "
+        SELECT id_pedido, estado
+        FROM pedidos
+        WHERE id_pedido = ?
+    ";
+
     $stmt = $pdo->prepare($verificar);
     $stmt->execute([$id_pedido]);
+
     $pedido = $stmt->fetch();
 
     if (!$pedido) {
-        throw new Exception("El pedido con ID {$id_pedido} no existe");
+        throw new Exception(
+            "El pedido con ID {$id_pedido} no existe."
+        );
     }
 
-    // Actualizamos el estado del pedido
-    $query = "UPDATE Pedidos 
-              SET estado = ?, fecha_actualizacion = NOW() 
-              WHERE id_pedido = ?";
-    
+    // Actualizar estado
+    $query = "
+        UPDATE pedidos
+        SET estado = ?
+        WHERE id_pedido = ?
+    ";
+
     $stmt = $pdo->prepare($query);
-    $resultado = $stmt->execute([$nuevo_estado, $id_pedido]);
-
-    if (!$resultado) {
-        throw new Exception("No se pudo actualizar el pedido");
-    }
-
-    // Respuesta exitosa
-    echo json_encode([
-        "estado" => "exito",
-        "mensaje" => "Pedido {$id_pedido} actualizado a '{$nuevo_estado}' exitosamente",
-        "id_pedido" => $id_pedido,
-        "nuevo_estado" => $nuevo_estado
+    $stmt->execute([
+        $nuevo_estado,
+        $id_pedido
     ]);
 
+    echo json_encode([
+        "estado" => "exito",
+        "mensaje" => "Pedido actualizado correctamente",
+        "datos" => [
+            "id_pedido" => $id_pedido,
+            "estado_anterior" => $pedido['estado'],
+            "nuevo_estado" => $nuevo_estado
+        ]
+    ], JSON_UNESCAPED_UNICODE);
+
 } catch (Exception $e) {
-    // Captura de error
+
     http_response_code(400);
+
     echo json_encode([
         "estado" => "error",
         "mensaje" => $e->getMessage()
-    ]);
+    ], JSON_UNESCAPED_UNICODE);
 }
 ?>

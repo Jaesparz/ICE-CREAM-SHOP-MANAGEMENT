@@ -153,7 +153,7 @@ try {
 
     $insertarPedido->execute([
         'identificador_cliente' => $identificadorCliente,
-        'estado' => 'Pendiente',
+        'estado' => 'En cola',
         'total_pagar' => $total
     ]);
 
