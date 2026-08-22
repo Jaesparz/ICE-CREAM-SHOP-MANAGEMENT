@@ -91,4 +91,8 @@ CREATE TABLE personalizacion_detalle (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO insumos (nombre, tipo, stock_actual)
-VALUES ('Helado de Vainilla', 'Sabor', 50);
+VALUES ('Helado de Vainilla', 'Helado', 50);
+
+
+INSERT INTO insumos (nombre, tipo, stock_actual)
+VALUES ('Banana Split ', 'Helado', 6);

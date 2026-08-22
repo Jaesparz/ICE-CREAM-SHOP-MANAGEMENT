@@ -16,3 +16,11 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3307:3306"
+    volumes:
+      # Guarda los datos en tu disco duro permanentemente
+      - db_data:/var/lib/mysql
+      # Inyecta tu script SQL automáticamente al iniciar
+      - ../database.sql:/docker-entrypoint-initdb.d/database.sql
+
+volumes:
+  db_data:

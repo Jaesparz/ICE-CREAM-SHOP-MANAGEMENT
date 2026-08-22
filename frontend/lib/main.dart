@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // Aquí importarán sus pantallas reales después
 // import 'screens/kiosko_screen.dart';
 // import 'screens/cocina_screen.dart';
-// import 'screens/inventario_screen.dart';
+import 'screens/inventario_screen.dart';
 
 void main() {
   runApp(const HeladeriaApp());
@@ -44,7 +44,7 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   final List<Widget> _pantallas = [
     const Center(child: Text("🛠️ Aquí irá el Kiosko de Génesis")),
     const Center(child: Text("🛠️ Aquí irá la Cocina de Camili")),
-    const Center(child: Text("🛠️ Aquí irá el Inventario de Josué")),
+    const InventarioScreen(),
   ];
 
   @override
