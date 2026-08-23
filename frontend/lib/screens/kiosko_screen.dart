@@ -54,10 +54,45 @@ class _KioskoScreenState extends State<KioskoScreen> {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
+
+        final List<dynamic> productos = data['datos'] ?? [];
+
+        // Generar categorías a partir de los productos
+        final categoriasNombres = productos
+            .map((p) => p['categoria']?.toString())
+            .where((nombre) => nombre != null && nombre.isNotEmpty)
+            .toSet()
+            .toList();
+
+        final categorias = categoriasNombres.asMap().entries.map((entry) {
+          return {
+            'id': entry.key + 1,
+            'nombre': entry.value,
+          };
+        }).toList();
+
+        // Adaptar los nombres del backend a los que espera el frontend
+        final productosAdaptados = productos.map((p) {
+          final categoriaNombre = p['categoria']?.toString() ?? '';
+
+          final categoria = categorias.firstWhere(
+            (cat) => cat['nombre'] == categoriaNombre,
+            orElse: () => {'id': 0, 'nombre': categoriaNombre},
+          );
+
+          return {
+            'id': p['id_producto'],
+            'nombre': p['nombre'],
+            'precio': p['precio_base'],
+            'id_categoria': categoria['id'],
+            'disponible': true,
+          };
+        }).toList();
+
         setState(() {
-          _categorias = data['categorias'] ?? [];
-          _productos = data['productos'] ?? [];
-          _productosFiltrados = _productos;
+          _categorias = categorias;
+          _productos = productosAdaptados;
+          _productosFiltrados = productosAdaptados;
           _isLoading = false;
         });
       } else {
@@ -142,7 +177,7 @@ class _KioskoScreenState extends State<KioskoScreen> {
       final bodyData = json.encode({
         'identificador_cliente': cliente,
         'productos': _carrito.map((item) => {
-          'id': item['id'],
+          'id_producto': item['id'],
           'cantidad': item['cantidad'],
         }).toList(),
       });

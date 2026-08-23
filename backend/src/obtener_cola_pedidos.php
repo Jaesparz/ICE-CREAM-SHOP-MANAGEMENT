@@ -43,6 +43,24 @@ try {
 
     $pedidos = $stmt->fetchAll();
 
+    $consultaDetalle = $pdo->prepare("
+        SELECT
+            p.nombre,
+            dp.cantidad,
+            dp.subtotal
+        FROM detalle_pedidos dp
+        INNER JOIN productos p ON p.id_producto = dp.id_producto
+        WHERE dp.id_pedido = :id_pedido
+    ");
+
+    foreach ($pedidos as &$pedido) {
+        $consultaDetalle->execute([
+            'id_pedido' => $pedido['id_pedido']
+        ]);
+        $pedido['productos'] = $consultaDetalle->fetchAll();
+    }
+    unset($pedido);
+
     echo json_encode([
         "estado" => "exito",
         "mensaje" => "Cola de pedidos recuperada correctamente",

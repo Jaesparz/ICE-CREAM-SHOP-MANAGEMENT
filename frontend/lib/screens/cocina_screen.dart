@@ -218,7 +218,7 @@ class _CocinaScreenState extends State<CocinaScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 430,
-                  mainAxisExtent: 310,
+                  mainAxisExtent: 420,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
                 ),
@@ -321,7 +321,66 @@ class _PedidoCard extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             const Divider(height: 1),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
+            Text(
+              'Detalle del pedido',
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Expanded(
+              child: pedido.productos.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'Sin detalle de productos',
+                        style: TextStyle(color: Colors.grey, fontSize: 13),
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: EdgeInsets.zero,
+                      itemCount: pedido.productos.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 6),
+                      itemBuilder: (context, index) {
+                        final item = pedido.productos[index];
+                        return Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _secondaryColor.withValues(alpha: 0.18),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${item.cantidad}x',
+                                style: const TextStyle(
+                                  color: _textColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                item.nombre,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: _textColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -349,7 +408,7 @@ class _PedidoCard extends StatelessWidget {
                 ),
               ],
             ),
-            const Spacer(),
+            const SizedBox(height: 12),
             Row(
               children: [
                 const Text(
@@ -511,6 +570,7 @@ class _Pedido {
     required this.fechaHora,
     required this.estado,
     required this.totalPagar,
+    required this.productos,
   });
 
   final int idPedido;
@@ -518,14 +578,40 @@ class _Pedido {
   final String fechaHora;
   final String estado;
   final double totalPagar;
+  final List<_ItemPedido> productos;
 
   factory _Pedido.fromJson(Map<String, dynamic> json) {
+    final productosJson = json['productos'];
+
     return _Pedido(
       idPedido: int.tryParse(json['id_pedido'].toString()) ?? 0,
       identificadorCliente: json['identificador_cliente']?.toString() ?? '',
       fechaHora: json['fecha_hora']?.toString() ?? '',
       estado: json['estado']?.toString() ?? 'En cola',
       totalPagar: double.tryParse(json['total_pagar'].toString()) ?? 0,
+      productos: productosJson is List
+          ? productosJson
+              .whereType<Map<String, dynamic>>()
+              .map(_ItemPedido.fromJson)
+              .toList()
+          : const [],
+    );
+  }
+}
+
+class _ItemPedido {
+  const _ItemPedido({
+    required this.nombre,
+    required this.cantidad,
+  });
+
+  final String nombre;
+  final int cantidad;
+
+  factory _ItemPedido.fromJson(Map<String, dynamic> json) {
+    return _ItemPedido(
+      nombre: json['nombre']?.toString() ?? 'Producto',
+      cantidad: int.tryParse(json['cantidad'].toString()) ?? 1,
     );
   }
 }

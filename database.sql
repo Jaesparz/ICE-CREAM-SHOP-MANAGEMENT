@@ -106,4 +106,4 @@ INSERT INTO productos (id_categoria, nombre, precio_base) VALUES
 -- Insumos
 INSERT INTO insumos (nombre, tipo, stock_actual) VALUES
 ('Helado de Vainilla', 'Sabor', 50),
-('Banana Split', 'Base', 6);
+('Banana Split', 'Topping', 6);
