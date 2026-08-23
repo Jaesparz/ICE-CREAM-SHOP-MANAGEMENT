@@ -118,7 +118,9 @@ try {
             'id_producto' => $idProducto,
             'nombre' => $producto['nombre'],
             'cantidad' => $cantidad,
-            'subtotal' => $subtotal
+            'subtotal' => $subtotal,
+            // AGREGADO: Capturamos los insumos que vengan en el JSON
+            'insumos' => $item['insumos'] ?? []
         ];
     }
 
@@ -179,14 +181,45 @@ try {
             )
     ");
 
+    // AGREGADO: Preparamos la consulta para guardar la personalización
+    $insertarPersonalizacion = $pdo->prepare("
+        INSERT INTO personalizacion_detalle
+            (
+                id_detalle,
+                id_insumo,
+                cantidad_usada
+            )
+        VALUES
+            (
+                :id_detalle,
+                :id_insumo,
+                :cantidad_usada
+            )
+    ");
+
     foreach ($detalles as $detalle) {
 
+        // 1. Guardamos el detalle del pedido
         $insertarDetalle->execute([
             'id_pedido' => $idPedido,
             'id_producto' => $detalle['id_producto'],
             'cantidad' => $detalle['cantidad'],
             'subtotal' => $detalle['subtotal']
         ]);
+        
+        // AGREGADO: Obtenemos el ID de este detalle específico
+        $idDetalle = (int)$pdo->lastInsertId();
+
+        // 2. AGREGADO: Guardamos los insumos ligados a este detalle
+        if (!empty($detalle['insumos'])) {
+            foreach ($detalle['insumos'] as $insumo) {
+                $insertarPersonalizacion->execute([
+                    'id_detalle' => $idDetalle,
+                    'id_insumo' => $insumo['id_insumo'],
+                    'cantidad_usada' => $insumo['cantidad_usada']
+                ]);
+            }
+        }
     }
 
     // Si todo salió bien, confirmamos los cambios.

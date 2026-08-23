@@ -103,7 +103,62 @@ INSERT INTO productos (id_categoria, nombre, precio_base) VALUES
 (1, 'Helado de Fresa', 2.50),
 (2, 'Banana Split', 5.00);
 
--- Insumos
+
+--mas categorias
+INSERT INTO categorias (nombre) VALUES 
+('Helados Clásicos'), 
+('Postres Especiales'), 
+('Bebidas Frías');
+
+--mas productos
+INSERT INTO productos (id_categoria, nombre, precio_base) VALUES
+(1, 'Cono Simple', 1.50),
+(1, 'Cono Doble', 2.50),
+(1, 'Copa Sundae', 3.50),
+(2, 'Banana Split', 5.00),
+(2, 'Brownie con Helado', 4.50),
+(3, 'Malteada Clásica', 3.00),
+(3, 'Frappé de Caramelo', 3.75);
+
+--mas insumos
 INSERT INTO insumos (nombre, tipo, stock_actual) VALUES
+-- Bases
+('Cono de Galleta', 'Base', 100),
+('Vaso de Plástico (8oz)', 'Base', 200),
+('Base de Brownie', 'Base', 30),
+-- Sabores
 ('Helado de Vainilla', 'Sabor', 50),
-('Banana Split', 'Topping', 6);
+('Helado de Chocolate', 'Sabor', 50),
+('Helado de Fresa', 'Sabor', 50),
+('Helado de Chicle', 'Sabor', 30),
+('Helado de Ron Pasas', 'Sabor', 30),
+-- Jaleas
+('Salsa de Chocolate', 'Jalea', 40),
+('Salsa de Caramelo', 'Jalea', 40),
+('Leche Condensada', 'Jalea', 40),
+-- Toppings
+('Galleta Oreo Picada', 'Topping', 25),
+('Gomitas Osito', 'Topping', 20),
+('Chispas de Colores', 'Topping', 30),
+('Maní Picado', 'Topping', 25),
+-- Extras
+('Cereza', 'Extra', 50),
+('Crema Chantilly', 'Extra', 40),
+('Barquillo', 'Extra', 60);
+
+
+-- --------------------------------------------------------
+-- TRIGGER: RESTA DE STOCK AUTOMÁTICA
+-- --------------------------------------------------------
+DELIMITER //
+
+CREATE TRIGGER restar_stock_insumos
+AFTER INSERT ON personalizacion_detalle
+FOR EACH ROW
+BEGIN
+    UPDATE insumos
+    SET stock_actual = stock_actual - NEW.cantidad_usada
+    WHERE id_insumo = NEW.id_insumo;
+END //
+
+DELIMITER ;
