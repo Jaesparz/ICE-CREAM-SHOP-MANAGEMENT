@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // Aquí importarán sus pantallas reales después
 // import 'screens/kiosko_screen.dart';
-// import 'screens/cocina_screen.dart';
+import 'screens/cocina_screen.dart';
 import 'screens/inventario_screen.dart';
 
 void main() {
@@ -21,6 +21,10 @@ class HeladeriaApp extends StatelessWidget {
         // Usamos el Rosa Pastel del Design System que definiste
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFF48FB1), 
+          surface: const Color(0xFFF9F9F9),
+          ).copyWith(
+          primary: const Color(0xFFF48FB1),
+          secondary: const Color(0xFF81D4FA),
           surface: const Color(0xFFF9F9F9),
         ),
       ),
@@ -43,7 +47,7 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   // Cuando Génesis y Camili terminen, reemplazarán estos Textos por sus Widgets.
   final List<Widget> _pantallas = [
     const Center(child: Text("🛠️ Aquí irá el Kiosko de Génesis")),
-    const Center(child: Text("🛠️ Aquí irá la Cocina de Camili")),
+    const CocinaScreen(),
     const InventarioScreen(),
   ];
 
@@ -51,7 +55,14 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Heladería', style: TextStyle(color: Colors.white)),
+        title: Text(
+          const [
+            'Kiosko de Ventas',
+            'Monitor de Cocina',
+            'Inventario',
+          ][_indiceActual],
+          style: const TextStyle(color: Colors.white),
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         centerTitle: true,
         elevation: 0,
