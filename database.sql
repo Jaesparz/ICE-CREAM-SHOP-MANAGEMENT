@@ -90,9 +90,20 @@ CREATE TABLE personalizacion_detalle (
         REFERENCES insumos (id_insumo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO insumos (nombre, tipo, stock_actual)
-VALUES ('Helado de Vainilla', 'Helado', 50);
+-- Categorías
+INSERT INTO categorias (nombre) VALUES
+('Helados'),
+('Postres'),
+('Bebidas');
 
+-- Productos
+INSERT INTO productos (id_categoria, nombre, precio_base) VALUES
+(1, 'Helado de Vainilla', 2.50),
+(1, 'Helado de Chocolate', 2.50),
+(1, 'Helado de Fresa', 2.50),
+(2, 'Banana Split', 5.00);
 
-INSERT INTO insumos (nombre, tipo, stock_actual)
-VALUES ('Banana Split ', 'Helado', 6);
+-- Insumos
+INSERT INTO insumos (nombre, tipo, stock_actual) VALUES
+('Helado de Vainilla', 'Sabor', 50),
+('Banana Split', 'Base', 6);
