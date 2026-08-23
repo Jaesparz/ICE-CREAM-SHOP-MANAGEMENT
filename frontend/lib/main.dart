@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 // Aquí importarán sus pantallas reales después
-// import 'screens/kiosko_screen.dart';
+ import 'screens/kiosko_screen.dart';
 // import 'screens/cocina_screen.dart';
 import 'screens/inventario_screen.dart';
 
@@ -42,7 +42,7 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   // Estas son las "pantallas" temporales.
   // Cuando Génesis y Camili terminen, reemplazarán estos Textos por sus Widgets.
   final List<Widget> _pantallas = [
-    const Center(child: Text("🛠️ Aquí irá el Kiosko de Génesis")),
+    const KioskoScreen(),
     const Center(child: Text("🛠️ Aquí irá la Cocina de Camili")),
     const InventarioScreen(),
   ];
