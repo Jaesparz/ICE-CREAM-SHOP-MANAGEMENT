@@ -174,13 +174,82 @@ class _KioskoScreenState extends State<KioskoScreen> {
     try {
       final url = Uri.parse('${ApiConfig.baseUrl}/crear_pedido.php');
 
+      // 1. Recetario completo basado en NOMBRES (Infalible para la sustentación)
+      final Map<String, List<Map<String, dynamic>>> recetario = {
+        'Frappé de Caramelo': [
+          {"id_insumo": 2, "cantidad_usada": 1}, // Vaso
+          {"id_insumo": 10, "cantidad_usada": 2}, // Salsa Caramelo (Doble porción)
+          {"id_insumo": 17, "cantidad_usada": 1}, // Crema Chantilly
+        ],
+        'Malteada Clásica': [
+          {"id_insumo": 2, "cantidad_usada": 1}, // Vaso
+          {"id_insumo": 5, "cantidad_usada": 2}, // Helado de Chocolate
+          {"id_insumo": 17, "cantidad_usada": 1}, // Crema Chantilly
+        ],
+        'Cono Doble': [
+          {"id_insumo": 1, "cantidad_usada": 1}, // Cono de Galleta
+          {"id_insumo": 4, "cantidad_usada": 1}, // Helado de Vainilla
+          {"id_insumo": 5, "cantidad_usada": 1}, // Helado de Chocolate
+        ],
+        'Cono Simple': [
+          {"id_insumo": 1, "cantidad_usada": 1}, // Cono de Galleta
+          {"id_insumo": 4, "cantidad_usada": 1}, // Helado de Vainilla
+        ],
+        'Copa Sundae': [
+          {"id_insumo": 2, "cantidad_usada": 1}, // Vaso
+          {"id_insumo": 4, "cantidad_usada": 2}, // 2 de Vainilla
+          {"id_insumo": 9, "cantidad_usada": 1}, // Salsa de Chocolate
+          {"id_insumo": 16, "cantidad_usada": 1}, // Cereza
+        ],
+        'Banana Split': [
+          {"id_insumo": 2, "cantidad_usada": 1}, // Vaso/Plato
+          {"id_insumo": 4, "cantidad_usada": 1}, // Vainilla
+          {"id_insumo": 5, "cantidad_usada": 1}, // Chocolate
+          {"id_insumo": 6, "cantidad_usada": 1}, // Fresa
+          {"id_insumo": 9, "cantidad_usada": 1}, // Salsa de Chocolate
+          {"id_insumo": 16, "cantidad_usada": 1}, // Cereza
+        ],
+        'Brownie con Helado': [
+          {"id_insumo": 3, "cantidad_usada": 1}, // Base de Brownie
+          {"id_insumo": 4, "cantidad_usada": 1}, // Helado de Vainilla
+          {"id_insumo": 9, "cantidad_usada": 1}, // Salsa de Chocolate
+        ],
+        'Helado de Chocolate': [
+          {"id_insumo": 1, "cantidad_usada": 1}, // Cono
+          {"id_insumo": 5, "cantidad_usada": 1}, // Chocolate
+        ],
+        'Helado de Fresa': [
+          {"id_insumo": 1, "cantidad_usada": 1}, // Cono
+          {"id_insumo": 6, "cantidad_usada": 1}, // Fresa
+        ],
+        'Helado de Vainilla': [
+          {"id_insumo": 1, "cantidad_usada": 1}, // Cono
+          {"id_insumo": 4, "cantidad_usada": 1}, // Vainilla
+        ],
+      };
+
+      // 2. Armamos el JSON leyendo el nombre del carrito
       final bodyData = json.encode({
         'identificador_cliente': cliente,
-        'productos': _carrito.map((item) => {
-          'id_producto': item['id'],
-          'cantidad': item['cantidad'],
+        'productos': _carrito.map((item) {
+          int idProd = int.parse(item['id'].toString());
+          String nombreProd = item['nombre'].toString(); // Sacamos el nombre
+          
+          return {
+            'id_producto': idProd,
+            'cantidad': item['cantidad'],
+            // Buscamos la receta por nombre, si no está, mandamos vacío
+            'insumos': recetario.containsKey(nombreProd) ? recetario[nombreProd] : [],
+          };
         }).toList(),
       });
+
+      // 3. Enviamos la petición al backend
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: bodyData,
+      );
 
       final response = await http.post(
         url,
