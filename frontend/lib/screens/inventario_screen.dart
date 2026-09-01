@@ -21,7 +21,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
     _cargarInventario();
   }
 
-  // Petición GET a tu endpoint
+  // Petición GET
   Future<void> _cargarInventario() async {
     try {
       final response = await http.get(Uri.parse('${ApiConfig.baseUrl}/verificar_stock.php'));
@@ -55,7 +55,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Estado de carga
+    // Estado de carga
     if (_isLoading) {
       return Center(
         child: CircularProgressIndicator(
@@ -64,14 +64,14 @@ class _InventarioScreenState extends State<InventarioScreen> {
       );
     }
 
-    // 2. Estado de error
+    // Estado de error
     if (_error.isNotEmpty) {
       return Center(
         child: Text(_error, style: const TextStyle(color: Colors.red, fontSize: 16)),
       );
     }
 
-    // 3. Lista de inventario (Con Pull to Refresh)
+    // Lista de inventario (Con Pull to Refresh)
     return RefreshIndicator(
       onRefresh: _cargarInventario,
       child: ListView.builder(
@@ -79,6 +79,7 @@ class _InventarioScreenState extends State<InventarioScreen> {
         itemCount: _insumos.length,
         itemBuilder: (context, index) {
           final item = _insumos[index];
+
           // Maneja el boolean dependiendo de cómo lo mande la base de datos (1 o true)
           final bool disponible = item['disponible'] == 1 || item['disponible'] == true;
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/kiosko_screen.dart';
 import 'screens/cocina_screen.dart';
 import 'screens/inventario_screen.dart';
+import 'screens/login_screen.dart'; 
 
 void main() {
   runApp(const HeladeriaApp());
@@ -17,7 +18,6 @@ class HeladeriaApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        // Usamos el Rosa Pastel del Design System que definiste
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFF48FB1), 
           surface: const Color(0xFFF9F9F9),
@@ -27,7 +27,7 @@ class HeladeriaApp extends StatelessWidget {
           surface: const Color(0xFFF9F9F9),
         ),
       ),
-      home: const NavegacionPrincipal(),
+      home: const LoginScreen(), 
     );
   }
 }
@@ -42,8 +42,6 @@ class NavegacionPrincipal extends StatefulWidget {
 class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
   int _indiceActual = 0;
 
-  // Estas son las "pantallas" temporales.
-  // Cuando Génesis y Camili terminen, reemplazarán estos Textos por sus Widgets.
   final List<Widget> _pantallas = [
     const KioskoScreen(),
     const CocinaScreen(),
@@ -65,6 +63,19 @@ class _NavegacionPrincipalState extends State<NavegacionPrincipal> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         centerTitle: true,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            tooltip: 'Cerrar Sesión',
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
+        ],
       ),
       body: _pantallas[_indiceActual],
       bottomNavigationBar: BottomNavigationBar(

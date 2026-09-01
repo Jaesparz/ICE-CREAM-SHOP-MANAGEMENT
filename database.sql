@@ -90,6 +90,15 @@ CREATE TABLE personalizacion_detalle (
         REFERENCES insumos (id_insumo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- TABLA USUARIOS
+
+CREATE TABLE usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100) NOT NULL,
+    rol VARCHAR(20) DEFAULT 'Administrador'
+);
+
 -- Categorías
 INSERT INTO categorias (nombre) VALUES
 ('Helados'),
@@ -147,9 +156,11 @@ INSERT INTO insumos (nombre, tipo, stock_actual) VALUES
 ('Barquillo', 'Extra', 60);
 
 
--- --------------------------------------------------------
+-- METEMOS EL USUARIO ADMIN
+INSERT INTO usuarios (usuario, password) VALUES ('admin', 'admin');
+
 -- TRIGGER: RESTA DE STOCK AUTOMÁTICA
--- --------------------------------------------------------
+
 DELIMITER //
 
 CREATE TRIGGER restar_stock_insumos

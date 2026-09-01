@@ -251,12 +251,6 @@ class _KioskoScreenState extends State<KioskoScreen> {
         body: bodyData,
       );
 
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: bodyData,
-      );
-
       final data = json.decode(response.body);
 
       if (response.statusCode == 200) {

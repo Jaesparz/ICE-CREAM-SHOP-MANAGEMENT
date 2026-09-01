@@ -2,7 +2,7 @@
 // backend/src/conexion.php
 
 // Si están usando la librería vlucas/phpdotenv con Composer, 
-// asegúrate de requerir el autoload primero.
+
 require_once __DIR__ . '/../vendor/autoload.php'; 
 
 // Cargar las variables del archivo .env
